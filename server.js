@@ -134,14 +134,16 @@ app.post('/create-teacher', (req, res) => {
 
 
 // ======= SAVE STUDENT ANSWER =========
-app.post('/submit-answer', (req, res) => {
-  const { student, question, answer } = req.body;
-  const line = `Student: ${student} | Q: ${question} | A: ${answer}\n`;
+app.post('/submit-answers', (req, res) => {
+  const { answers } = req.body; // Array of objects: [{student, question, answer}, ...]
   try {
-    fs.appendFileSync(path.join(__dirname, 'answers.txt'), line);
-    res.send({ message: 'Answer saved' });
+    answers.forEach(({ student, question, answer }) => {
+      const line = `Student: ${student} | Q: ${question} | A: ${answer}\n`;
+      fs.appendFileSync(path.join(__dirname, 'answers.txt'), line);
+    });
+    res.send({ message: 'Answers saved' });
   } catch (err) {
-    res.status(500).send({ error: 'Failed to save answer' });
+    res.status(500).send({ error: 'Failed to save answers' });
   }
 });
 
