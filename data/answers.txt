@@ -1,2 +1,0 @@
-Student: krishna | Q: INDIA CAPITAL | A: delhi
-Student: krishna | Q: NATION ANIMAL | A: tiger

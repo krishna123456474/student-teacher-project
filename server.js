@@ -115,13 +115,17 @@ app.post('/delete-questions', (req, res) => {
 // ======= DEVELOPER CREATES TEACHER ID =========
 app.post('/create-teacher', (req, res) => {
   const { id, password } = req.body;
-  try {
-    fs.appendFileSync(path.join(__dirname, 'teachers.txt'), `${id},${password}\n`);
-    res.send({ message: 'Teacher created' });
-  } catch (err) {
-    res.status(500).send({ error: 'Failed to create teacher' });
-  }
+  const data = `${id},${password}\n`;
+  
+  fs.appendFile(path.join(__dirname, 'teachers.txt'), data, (err) => {
+    if (err) {
+      console.error('Error writing to file:', err);
+      return res.status(500).send({ error: 'Error creating teacher' });
+    }
+    res.send({ message: 'Teacher created successfully!' });
+  });
 });
+
 
 // ======= SAVE STUDENT ANSWER =========
 app.post('/submit-answer', (req, res) => {
