@@ -139,9 +139,9 @@ app.post('/submit-answer', (req, res) => {
   }
 });
 
-// ======= GET ANSWERS BY STUDENT =========
-app.post('/get-answers', (req, res) => {
-  const { student } = req.body;
+// ======= GET ANSWERS BY STUDENT (GET request) =========
+app.get('/student-answers/:student', (req, res) => {
+  const student = req.params.student;
   try {
     const data = fs.readFileSync(path.join(__dirname, 'answers.txt'), 'utf8').split('\n');
     const filtered = data.filter(line => line.startsWith(`Student: ${student}`));
