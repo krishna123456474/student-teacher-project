@@ -45,7 +45,7 @@ app.post('/signup', (req, res) => {
   const data = `${name},${password}\n`;
   try {
     fs.appendFileSync(path.join(__dirname, 'students.txt'), data);
-    res.send({ message: 'Account created!' });
+    res.send({ success: true, message: 'Account created!' });
   } catch (err) {
     res.status(500).send({ error: 'Failed to create account' });
   }
