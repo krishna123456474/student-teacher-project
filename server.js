@@ -1,10 +1,11 @@
 const express = require('express');
 const bodyParser = require('body-parser');
+const app = express();
 const cors = require('cors');
 const fs = require('fs');
 const path = require('path');
 
-const app = express();
+
 const PORT = process.env.PORT || 3000; // Make sure to use environment port if deployed on Render
 
 app.use(cors());
@@ -50,20 +51,21 @@ app.post('/signup', (req, res) => {
   }
 });
 
-// ======= STUDENT LOGIN =========
-app.post('/login', (req, res) => {
-  const { name, password } = req.body;
-  try {
-    const users = fs.readFileSync(path.join(__dirname, 'students.txt'), 'utf8').split('\n');
-    const match = users.find(user => user === `${name},${password}`);
-    if (match) {
-      res.send({ success: true });
-    } else {
-      res.send({ success: false });
+app.post('/student-login', (req, res) => {
+  const { id, password } = req.body;
+  // Check the student data (use same logic as in /login)
+  fs.readFile(path.join(__dirname, 'students.txt'), 'utf8', (err, data) => {
+    if (err) {
+      return res.status(500).send({ error: 'Error reading student data' });
     }
-  } catch (err) {
-    res.status(500).send({ error: 'Error reading student data' });
-  }
+    const students = data.split('\n');
+    const match = students.find(student => student === `${id},${password}`);
+    if (match) {
+      return res.json({ success: true });
+    } else {
+      return res.json({ success: false });
+    }
+  });
 });
 
 // ======= TEACHER LOGIN =========
