@@ -11,6 +11,7 @@ app.use(cors());
 app.use(bodyParser.json());
 app.use(express.static('public'));
 
+
 // ======= HOMEPAGE =========
 app.get('/', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'index.html'));
@@ -18,6 +19,7 @@ app.get('/', (req, res) => {
 
 // ======= STUDENT LOGIN PAGE =========
 app.get('/student-login', (req, res) => {
+  console.log('Request for /student-login');
   res.sendFile(path.join(__dirname, 'public', 'student-login.html'));
 });
 
