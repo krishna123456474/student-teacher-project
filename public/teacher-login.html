@@ -123,97 +123,6 @@
 
   <script>
     const loginForm = document.getElementById('login-form');
-<<<<<<< HEAD
-const teacherDashboard = document.getElementById('teacher-dashboard');
-const addQuestionForm = document.getElementById('add-question-form');
-const newQuestionInput = document.getElementById('new-question');
-const deleteAllQuestionsBtn = document.getElementById('delete-all-questions');
-const viewStudentAnswersBtn = document.getElementById('view-student-answers');
-const studentNameInput = document.getElementById('student-name-input');
-const getAnswersBtn = document.getElementById('get-answers');
-const answersContainer = document.getElementById('answers');
-
-// Teacher login event listener
-loginForm.addEventListener('submit', async (e) => {
-  e.preventDefault();
-  const teacherId = document.getElementById('teacher-id').value;
-  const password = document.getElementById('teacher-password').value;
-
-  // Sending login request to the server (replace with your Render URL for login)
-  const response = await fetch('https://student-teacher-project.onrender.com/login', {
-    method: 'POST',
-    body: JSON.stringify({ name: teacherId, password }),
-    headers: { 'Content-Type': 'application/json' }
-  });
-  
-  const result = await response.json();
-  if (result.success) {
-    teacherDashboard.style.display = 'block';  // Show teacher dashboard if login is successful
-    loginForm.style.display = 'none';  // Hide the login form
-  } else {
-    alert('Invalid credentials!');
-  }
-});
-
-// Add question event listener
-addQuestionForm.addEventListener('submit', async (e) => {
-  e.preventDefault();
-  const question = newQuestionInput.value;
-
-  // Send new question to the server (replace with your Render URL for add-question)
-  const response = await fetch('https://student-teacher-project.onrender.com/add-question', {
-    method: 'POST',
-    body: JSON.stringify({ question }),
-    headers: { 'Content-Type': 'application/json' }
-  });
-
-  const result = await response.json();
-  if (result.success) {
-    newQuestionInput.value = '';  // Clear the input field
-    alert('Question added!');
-  } else {
-    alert('Failed to add question!');
-  }
-});
-
-// Delete all questions event listener
-deleteAllQuestionsBtn.addEventListener('click', async () => {
-  // Send request to delete all questions (replace with your Render URL for delete-questions)
-  const response = await fetch('https://student-teacher-project.onrender.com/delete-questions', { method: 'POST' });
-  
-  const result = await response.json();
-  if (result.success) {
-    alert('All questions deleted!');
-  } else {
-    alert('Failed to delete questions!');
-  }
-});
-
-// View student answers event listener
-viewStudentAnswersBtn.addEventListener('click', () => {
-  document.getElementById('student-answers-container').style.display = 'block';  // Show the student answers section
-});
-
-// Get student answers event listener
-getAnswersBtn.addEventListener('click', async () => {
-  const studentName = studentNameInput.value;
-
-  // Send request to get student answers (replace with your Render URL for get-answers)
-  const response = await fetch('https://student-teacher-project.onrender.com/get-answers', {
-    method: 'POST',
-    body: JSON.stringify({ student: studentName }),
-    headers: { 'Content-Type': 'application/json' }
-  });
-  
-  const answers = await response.json();
-  if (answers && answers.length > 0) {
-    answersContainer.innerHTML = answers.join('<br>');  // Display the student answers
-  } else {
-    answersContainer.innerHTML = 'No answers found for this student.';
-  }
-});
-
-=======
     const teacherDashboard = document.getElementById('teacher-dashboard');
     const addQuestionForm = document.getElementById('add-question-form');
     const newQuestionInput = document.getElementById('new-question');
@@ -222,60 +131,114 @@ getAnswersBtn.addEventListener('click', async () => {
     const studentNameInput = document.getElementById('student-name-input');
     const getAnswersBtn = document.getElementById('get-answers');
     const answersContainer = document.getElementById('answers');
-
+    const studentAnswersContainer = document.getElementById('student-answers-container');
+  
+    // 🧑‍🏫 Teacher login event listener
     loginForm.addEventListener('submit', async (e) => {
       e.preventDefault();
       const teacherId = document.getElementById('teacher-id').value;
       const password = document.getElementById('teacher-password').value;
-
-      const response = await fetch('http://localhost:3000/teacher-login', {
-        method: 'POST',
-        body: JSON.stringify({ id: teacherId, password }),
-        headers: { 'Content-Type': 'application/json' }
-      });
-
-      const result = await response.json();
-      if (result.success) {
-        teacherDashboard.style.display = 'block';
-        loginForm.style.display = 'none';
-      } else {
-        alert('Invalid credentials!');
+  
+      try {
+        const response = await fetch('https://student-teacher-project.onrender.com/login', {
+          method: 'POST',
+          body: JSON.stringify({ name: teacherId, password }),
+          headers: { 'Content-Type': 'application/json' }
+        });
+  
+        const result = await response.json();
+        if (result.success) {
+          teacherDashboard.style.display = 'block';  // Show dashboard
+          loginForm.style.display = 'none';          // Hide login form
+        } else {
+          alert('Invalid credentials!');
+        }
+      } catch (error) {
+        alert('Login failed. Please try again.');
       }
     });
-
+  
+    // ➕ Add question event listener
     addQuestionForm.addEventListener('submit', async (e) => {
       e.preventDefault();
-      const question = newQuestionInput.value;
-      await fetch('http://localhost:3000/add-question', {
-        method: 'POST',
-        body: JSON.stringify({ question }),
-        headers: { 'Content-Type': 'application/json' }
-      });
-
-      newQuestionInput.value = '';
-      alert('Question added!');
+      const question = newQuestionInput.value.trim();
+      if (!question) return alert("Question cannot be empty!");
+  
+      try {
+        const response = await fetch('https://student-teacher-project.onrender.com/add-question', {
+          method: 'POST',
+          body: JSON.stringify({ question }),
+          headers: { 'Content-Type': 'application/json' }
+        });
+  
+        const result = await response.json();
+        if (result.success) {
+          newQuestionInput.value = '';
+          alert('Question added!');
+        } else {
+          alert('Failed to add question!');
+        }
+      } catch (error) {
+        alert('Error adding question. Try again.');
+      }
     });
-
+  
+    // ❌ Delete all questions event listener
     deleteAllQuestionsBtn.addEventListener('click', async () => {
-      await fetch('http://localhost:3000/delete-questions', { method: 'POST' });
-      alert('All questions deleted!');
+      const confirmDelete = confirm("Are you sure you want to delete all questions?");
+      if (!confirmDelete) return;
+  
+      try {
+        const response = await fetch('https://student-teacher-project.onrender.com/delete-questions', {
+          method: 'POST'
+        });
+  
+        const result = await response.json();
+        if (result.success) {
+          alert('All questions deleted!');
+        } else {
+          alert('Failed to delete questions!');
+        }
+      } catch (error) {
+        alert('Error deleting questions.');
+      }
     });
-
+  
+    // 📄 Show student answer input section
     viewStudentAnswersBtn.addEventListener('click', () => {
-      document.getElementById('student-answers-container').style.display = 'block';
+      studentAnswersContainer.style.display = 'block';
     });
-
+  
+    // 📥 Get student answers event listener
     getAnswersBtn.addEventListener('click', async () => {
-      const studentName = studentNameInput.value;
-      const response = await fetch('http://localhost:3000/get-answers', {
-        method: 'POST',
-        body: JSON.stringify({ student: studentName }),
-        headers: { 'Content-Type': 'application/json' }
-      });
-      const answers = await response.json();
-      answersContainer.innerHTML = answers.join('<br>');
+      const studentName = studentNameInput.value.trim();
+      if (!studentName) return alert("Please enter a student name.");
+  
+      getAnswersBtn.disabled = true;
+      getAnswersBtn.innerText = "Loading...";
+      answersContainer.innerHTML = ''; // clear previous answers
+  
+      try {
+        const response = await fetch('https://student-teacher-project.onrender.com/get-answers', {
+          method: 'POST',
+          body: JSON.stringify({ student: studentName }),
+          headers: { 'Content-Type': 'application/json' }
+        });
+  
+        const answers = await response.json();
+        if (answers && answers.length > 0) {
+          answersContainer.innerHTML = answers.join('<br>');
+        } else {
+          answersContainer.innerHTML = 'No answers found for this student.';
+        }
+      } catch (error) {
+        answersContainer.innerHTML = 'Failed to fetch answers.';
+      }
+  
+      getAnswersBtn.disabled = false;
+      getAnswersBtn.innerText = "Get Answers";
     });
->>>>>>> 55b29753715f9a626ab612da23f547c6caa9281c
   </script>
+  
 </body>
 </html>
