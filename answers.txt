@@ -1,0 +1,12 @@
+Student: krishna | Q: what is the capital of india | A: delhi
+Student: krishna | Q: who is the prime minister | A: narendra modi
+Student: krishna | Q: who is the president | A: draupadi murmu
+Student: krishna | Q: who is the chief minister of up | A: yogi
+Student: krishna | Q: what is the capital of india | A: DELHI
+Student: krishna | Q: who is the prime minister | A: NAREDNRA MODI
+Student: krishna | Q: who is the president | A: DRAUPADI MURMU
+Student: krishna | Q: who is the chief minister of up | A: YOGI ADITYANATH
+Student: krishna | Q: what is the capital of india | A: DELHI
+Student: krishna | Q: who is the president of india | A: DRAUPADI MURMU
+Student: Alok | Q: What is the shortcut key of paste special . | A: alt+ctrl+v
+Student: Alok | Q: Shortcut key of edit cell | A: F2

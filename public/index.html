@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Welcome Page</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      text-align: center;
+      padding: 50px;
+    }
+    button {
+      padding: 15px 25px;
+      font-size: 16px;
+      margin: 20px;
+      cursor: pointer;
+      background-color:red;
+      color:yellow;
+      font-weight: 900;
+      font-size: 120%;
+    }
+    .button:hover {background-color: yellow; color: red; transition-duration:0.8s;}
+    .intro {text-align:center;}
+  </style>
+</head>
+<body STYLE="background-image: linear-gradient(76deg, #acbaff 0%, #feacf8 30%, #ffffff 66%, #ffe7bc 100%);
+">
+  <h1 class="intro"> This website is developed by<b> KRISHNA SETH</b>.<br> It is created solely for educational purposes and is designed to provide an interactive and engaging learning experience. <br>All features and functionalities aim to assist students, teachers, and developers in managing educational content and promoting effective learning environments.  </h1>
+ <hr size="4" color="black"> 
+  <h1>Welcome! Please choose your role:</h1>
+  <button onclick="window.location.href='/student-login'" class="button">Student Login</button><br>
+  <button onclick="window.location.href='/teacher-login'" class="button">Teacher Login</button><br>
+  <button onclick="window.location.href='/developer-login'" class="button">Developer Login</button>
+</body>
+</html>
