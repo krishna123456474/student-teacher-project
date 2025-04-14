@@ -70,12 +70,17 @@ app.post('/teacher-login', (req, res) => {
   try {
     const data = fs.readFileSync(path.join(__dirname, 'teachers.txt'), 'utf8').split('\n');
     const match = data.find(line => line === `${id},${password}`);
-    res.send({ success: !!match });
+    
+    if (match) {
+      res.send({ success: true });
+    } else {
+      res.send({ success: false, message: 'Invalid login credentials' });
+    }
   } catch (err) {
+    console.log(err); // For debugging
     res.status(500).send({ error: 'Error reading teacher data' });
   }
 });
-
 // ======= ADD QUESTION =========
 app.post('/add-question', (req, res) => {
   const { question } = req.body;
