@@ -99,8 +99,10 @@ app.post('/add-question', (req, res) => {
 // ======= GET QUESTIONS =========
 app.get('/questions', (req, res) => {
   try {
-    const questions = fs.readFileSync(path.join(__dirname, 'questions.txt'), 'utf8').split('\n').filter(q => q);
-    res.send(questions);
+    const questions = fs.readFileSync(path.join(__dirname, 'questions.txt'), 'utf8')
+      .split('\n')
+      .filter(q => q);
+      res.send({ success: true, questions }); // <-- Yeh sirf array bhej raha hai
   } catch (err) {
     res.status(500).send({ error: 'Error reading questions' });
   }
