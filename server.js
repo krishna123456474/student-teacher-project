@@ -4,6 +4,7 @@ const app = express();
 const cors = require('cors');
 const fs = require('fs');
 const path = require('path');
+const readline = require('readline');
 
 
 const PORT = process.env.PORT || 3000; // Make sure to use environment port if deployed on Render
@@ -171,27 +172,37 @@ app.post('/submit-answer', (req, res) => {
 });
 
 // ========== GET ANSWERS ==========
+
 app.get('/student-answers/:student', (req, res) => {
   const student = req.params.student.toLowerCase();
- 
-  fs.readFile(filePath, 'utf8', (err, data) => {
-    if (err) {
-      console.error("Read Error:", err);
-      return res.status(500).json({ error: 'Failed to fetch answers' });
+  const filePath = path.join(__dirname, 'answers.txt');
+
+  const rl = readline.createInterface({
+    input: fs.createReadStream(filePath),
+    output: process.stdout,
+    terminal: false
+  });
+
+  let filtered = [];
+  
+  rl.on('line', (line) => {
+    if (line.toLowerCase().includes(`student: ${student}`)) {
+      filtered.push(line.trim());
     }
+  });
 
-    const filtered = data.split('\n')
-      .filter(line => line.toLowerCase().startsWith(`student: ${student}`))
-      .map(line => line.trim());
-
+  rl.on('close', () => {
     if (filtered.length === 0) {
       return res.json({ message: 'No answers found for this student' });
     }
-
     res.json({ answers: filtered });
   });
-});
 
+  rl.on('error', (err) => {
+    console.error("File read error:", err);
+    return res.status(500).json({ error: 'Failed to fetch answers' });
+  });
+});
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
 });
