@@ -11,6 +11,7 @@ const PORT = process.env.PORT || 3000; // Make sure to use environment port if d
 app.use(cors());
 app.use(bodyParser.json());
 app.use(express.static('public'));
+app.use(express.json());
 
 
 // ======= HOMEPAGE =========
@@ -148,6 +149,7 @@ app.post('/submit-answers', (req, res) => {
   }
 });
 
+const filePath = path.join(__dirname, 'answers.txt');
 
 // ========== POST ANSWER ==========
 app.post('/submit-answer', (req, res) => {
@@ -171,7 +173,7 @@ app.post('/submit-answer', (req, res) => {
 // ========== GET ANSWERS ==========
 app.get('/student-answers/:student', (req, res) => {
   const student = req.params.student.toLowerCase();
-
+ 
   fs.readFile(filePath, 'utf8', (err, data) => {
     if (err) {
       console.error("Read Error:", err);
@@ -179,7 +181,7 @@ app.get('/student-answers/:student', (req, res) => {
     }
 
     const filtered = data.split('\n')
-      .filter(line => line.toLowerCase().includes(`student: ${student}`))
+      .filter(line => line.toLowerCase().startsWith(`student: ${student}`))
       .map(line => line.trim());
 
     if (filtered.length === 0) {
@@ -194,8 +196,3 @@ app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
 });
 
-// Start the server (if needed)
-const port = process.env.PORT || 3000;
-app.listen(port, () => {
-  console.log(`Server running on port ${port}`);
-});

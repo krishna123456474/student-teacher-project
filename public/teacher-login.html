@@ -296,46 +296,49 @@
       viewStudentAnswersBtn.addEventListener("click", () => {
         studentAnswersContainer.style.display = "block";
       });
+// 📥 Get answers of student
+getAnswersBtn.addEventListener("click", async () => {
+  const studentName = studentNameInput.value.trim();
+  if (!studentName) {
+    alert("Please enter a valid student name.");
+    return;
+  }
 
-      // 📥 Get answers of student
-      getAnswersBtn.addEventListener("click", async () => {
-        const studentName = studentNameInput.value.trim();
-        if (!studentName) {
-          alert("Please enter a valid student name.");
-          return;
-        }
-        try {
-          const response = await fetch(
-            `https://student-teacher-project.onrender.com/student-answers/${studentName}`
-          );
+  // Clear any previous answers
+  answersContainer.innerHTML = "";
 
-          if (!response.ok) {
-            throw new Error(`HTTP error! status: ${response.status}`);
-          }
+  try {
+    const response = await fetch(
+      `https://student-teacher-project.onrender.com/student-answers/${studentName}`
+    );
 
-          const result = await response.json();
-          console.log("Server Response:", result);
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
 
-          // Check if answers are present and not empty
-          if (!result.answers || result.answers.length === 0) {
-            answersContainer.innerHTML = "No answers found for this student.";
-          } else {
-            // Map the answers to display
-            const answers = result.answers
-              .map((ans) => {
-                // Extract the answer part if needed (split by ':' and get answer)
-                const answerText = ans.split(":").slice(1).join(":").trim();
-                return `<li>${answerText || ans}</li>`; // Display the answer
-              })
-              .join("");
-            answersContainer.innerHTML = `<ul>${answers}</ul>`;
-          }
-        } catch (error) {
-          console.error("Fetch Error:", error);
-          answersContainer.innerHTML =
-            "Error fetching answers. Please try again.";
-        }
-      });
+    const result = await response.json();
+    console.log("Server Response:", result);
+
+    // Check if answers are present and not empty
+    if (!result.answers || result.answers.length === 0) {
+      answersContainer.innerHTML = "No answers found for this student.";
+    } else {
+      // Map the answers to display
+      const answers = result.answers
+        .map((ans) => {
+          // Extract the answer part if needed (split by ':' and get answer)
+          const answerText = ans.split(":").slice(1).join(":").trim();
+          return `<li>${answerText || ans}</li>`; // Display the answer
+        })
+        .join("");
+      answersContainer.innerHTML = `<ul>${answers}</ul>`;
+    }
+  } catch (error) {
+    console.error("Fetch Error:", error);
+    answersContainer.innerHTML =
+      "Error fetching answers. Please try again.";
+  }
+});
     </script>
   </body>
 </html>
