@@ -148,17 +148,16 @@ app.post('/submit-answers', (req, res) => {
   }
 });
 
-
-// ======= GET ANSWERS BY STUDENT (GET request) =========
+// GET ANSWER BY STUDENT
 app.get('/student-answers/:student', (req, res) => {
   const student = req.params.student;
-  try {
-    const data = fs.readFileSync(path.join(__dirname, 'answers.txt'), 'utf8').split('\n');
-    const filtered = data.filter(line => line.startsWith(`Student: ${student}`));
+  fs.readFile(path.join(__dirname, 'answers.txt'), 'utf8', (err, data) => {
+    if (err) {
+      return res.status(500).send({ error: 'Failed to fetch answers' });
+    }
+    const filtered = data.split('\n').filter(line => line.startsWith(`Student: ${student}`));
     res.send(filtered);
-  } catch (err) {
-    res.status(500).send({ error: 'Failed to fetch answers' });
-  }
+  });
 });
 
 // Start the server
