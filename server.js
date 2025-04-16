@@ -149,9 +149,13 @@ app.post('/submit-answers', (req, res) => {
 });
 
 // GET ANSWER BY STUDENT
+// ======= GET ANSWERS BY STUDENT (GET request) =========
 app.get('/student-answers/:student', (req, res) => {
-  const student = req.params.student;
-  fs.readFile(path.join(__dirname, 'answers.txt'), 'utf8', (err, data) => {
+  const student = req.params.student.toLowerCase();  // Case-insensitive comparison
+
+  const filePath = path.join(__dirname, 'answers.txt');
+  
+  fs.readFile(filePath, 'utf8', (err, data) => {
     if (err) {
       return res.status(500).send({ error: 'Failed to fetch answers' });
     }
@@ -159,7 +163,10 @@ app.get('/student-answers/:student', (req, res) => {
     // Log the fetched data to check if it's being read correctly
     console.log("Fetched Data: ", data);
     
-    const filtered = data.split('\n').filter(line => line.toLowerCase().startsWith(`student: ${student.toLowerCase()}`));
+    const filtered = data.split('\n').filter(line => {
+      console.log("Line: ", line);  // Log each line to see what's being filtered
+      return line.toLowerCase().startsWith(`student: ${student}`);
+    });
 
     // Log the filtered answers to check if the matching is correct
     console.log("Filtered Answers: ", filtered);
