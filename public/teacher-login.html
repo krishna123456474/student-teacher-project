@@ -223,7 +223,9 @@
       try {
         const response = await fetch(`https://student-teacher-project.onrender.com/student-answers/${studentName}`);
         const result = await response.json();
-        
+      
+        console.log("Fetched Answers: ", result); // Log the result
+      
         if (result.length === 0) {
           answersContainer.innerHTML = "No answers found for this student.";
         } else {

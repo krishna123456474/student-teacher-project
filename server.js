@@ -155,7 +155,15 @@ app.get('/student-answers/:student', (req, res) => {
     if (err) {
       return res.status(500).send({ error: 'Failed to fetch answers' });
     }
-    const filtered = data.split('\n').filter(line => line.startsWith(`Student: ${student}`));
+
+    // Log the fetched data to check if it's being read correctly
+    console.log("Fetched Data: ", data);
+    
+    const filtered = data.split('\n').filter(line => line.toLowerCase().startsWith(`student: ${student.toLowerCase()}`));
+
+    // Log the filtered answers to check if the matching is correct
+    console.log("Filtered Answers: ", filtered);
+
     res.send(filtered);
   });
 });
