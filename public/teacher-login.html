@@ -222,18 +222,27 @@
   
       try {
         const response = await fetch(`https://student-teacher-project.onrender.com/student-answers/${studentName}`);
+        
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        
         const result = await response.json();
+        console.log("Server Response:", result);
       
-        console.log("Fetched Answers: ", result); // Log the result
-      
-        if (result.length === 0) {
+        if (!result.answers || result.answers.length === 0) {
           answersContainer.innerHTML = "No answers found for this student.";
         } else {
-          const answers = result.map(ans => `<li>${ans}</li>`).join('');
+          const answers = result.answers.map(ans => {
+            // Extract just the answer part if needed
+            const answerText = ans.split(':').slice(1).join(':').trim();
+            return `<li>${answerText || ans}</li>`;
+          }).join('');
           answersContainer.innerHTML = `<ul>${answers}</ul>`;
         }
       } catch (error) {
-        answersContainer.innerHTML = "Server error while fetching answers.";
+        console.error("Fetch Error:", error);
+        answersContainer.innerHTML = "Error fetching answers. Please try again.";
       }
     });
   </script>

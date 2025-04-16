@@ -148,30 +148,24 @@ app.post('/submit-answers', (req, res) => {
   }
 });
 
-// GET ANSWER BY STUDENT
-// ======= GET ANSWERS BY STUDENT (GET request) =========
-app.get('/student-answers/:student', (req, res) => {
-  const student = req.params.student.toLowerCase();  // Case-insensitive comparison
 
+// get answer
+app.get('/student-answers/:student', (req, res) => {
+  const student = req.params.student.toLowerCase();
   const filePath = path.join(__dirname, 'answers.txt');
-  
+
   fs.readFile(filePath, 'utf8', (err, data) => {
     if (err) {
-      return res.status(500).send({ error: 'Failed to fetch answers' });
+      console.error("File read error:", err);
+      return res.status(500).json({ error: 'Failed to fetch answers' });
     }
 
-    // Log the fetched data to check if it's being read correctly
-    console.log("Fetched Data: ", data);
-    
-    const filtered = data.split('\n').filter(line => {
-      console.log("Line: ", line);  // Log each line to see what's being filtered
-      return line.toLowerCase().startsWith(`student: ${student}`);
-    });
+    const filtered = data.split('\n')
+      .filter(line => line.toLowerCase().includes(`student: ${student}`))
+      .map(line => line.trim());
 
-    // Log the filtered answers to check if the matching is correct
-    console.log("Filtered Answers: ", filtered);
-
-    res.send(filtered);
+    console.log("Filtered Answers:", filtered);
+    res.json({ answers: filtered }); // Send as proper JSON
   });
 });
 
