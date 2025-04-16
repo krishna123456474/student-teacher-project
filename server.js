@@ -149,31 +149,49 @@ app.post('/submit-answers', (req, res) => {
 });
 
 
-// GET ANSWER BY STUDENT
+// ========== POST ANSWER ==========
+app.post('/submit-answer', (req, res) => {
+  const { student, answer } = req.body;
+
+  if (!student || !answer) {
+    return res.status(400).json({ error: 'Student name and answer are required' });
+  }
+
+  const line = `student: ${student.toLowerCase()}, answer: ${answer}\n`;
+
+  fs.appendFile(filePath, line, err => {
+    if (err) {
+      console.error("Write Error:", err);
+      return res.status(500).json({ error: 'Failed to save answer' });
+    }
+    res.json({ message: 'Answer saved successfully' });
+  });
+});
+
+// ========== GET ANSWERS ==========
 app.get('/student-answers/:student', (req, res) => {
   const student = req.params.student.toLowerCase();
-  const filePath = path.join(__dirname, 'answers.txt');
 
-  // Read the file asynchronously
   fs.readFile(filePath, 'utf8', (err, data) => {
     if (err) {
-      console.error("File read error:", err);
+      console.error("Read Error:", err);
       return res.status(500).json({ error: 'Failed to fetch answers' });
     }
 
-    // Process the data and filter by student name
     const filtered = data.split('\n')
-      .filter(line => line.toLowerCase().includes(`student: ${student}`)) // Case-insensitive comparison
-      .map(line => line.trim()) // Trim extra spaces
+      .filter(line => line.toLowerCase().includes(`student: ${student}`))
+      .map(line => line.trim());
 
-    // Check if any matching answers were found
     if (filtered.length === 0) {
-      return res.status(404).json({ message: 'No answers found for this student' });
+      return res.json({ message: 'No answers found for this student' });
     }
 
-    console.log("Filtered Answers:", filtered); // Log filtered answers for debugging
-    res.json({ answers: filtered }); // Send the filtered answers as a JSON response
+    res.json({ answers: filtered });
   });
+});
+
+app.listen(PORT, () => {
+  console.log(`Server is running on port ${PORT}`);
 });
 
 // Start the server (if needed)
