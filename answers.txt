@@ -1,1 +1,2 @@
-# Just added for testing
+Student: hello | Q: What is AI? | A: AI is Artificial Intelligence.
+Student: hello | Q: What is ML? | A: ML is Machine Learning.
