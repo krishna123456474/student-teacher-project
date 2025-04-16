@@ -149,27 +149,35 @@ app.post('/submit-answers', (req, res) => {
 });
 
 
-// get answer
+// GET ANSWER BY STUDENT
 app.get('/student-answers/:student', (req, res) => {
   const student = req.params.student.toLowerCase();
   const filePath = path.join(__dirname, 'answers.txt');
 
+  // Read the file asynchronously
   fs.readFile(filePath, 'utf8', (err, data) => {
     if (err) {
       console.error("File read error:", err);
       return res.status(500).json({ error: 'Failed to fetch answers' });
     }
 
+    // Process the data and filter by student name
     const filtered = data.split('\n')
-      .filter(line => line.toLowerCase().includes(`student: ${student}`))
-      .map(line => line.trim());
+      .filter(line => line.toLowerCase().includes(`student: ${student}`)) // Case-insensitive comparison
+      .map(line => line.trim()) // Trim extra spaces
 
-    console.log("Filtered Answers:", filtered);
-    res.json({ answers: filtered }); // Send as proper JSON
+    // Check if any matching answers were found
+    if (filtered.length === 0) {
+      return res.status(404).json({ message: 'No answers found for this student' });
+    }
+
+    console.log("Filtered Answers:", filtered); // Log filtered answers for debugging
+    res.json({ answers: filtered }); // Send the filtered answers as a JSON response
   });
 });
 
-// Start the server
-app.listen(PORT, () => {
-  console.log(`Server running at https://student-teacher-project.onrender.com`);
+// Start the server (if needed)
+const port = process.env.PORT || 3000;
+app.listen(port, () => {
+  console.log(`Server running on port ${port}`);
 });
