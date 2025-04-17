@@ -203,6 +203,34 @@ app.get('/student-answers/:student', (req, res) => {
     return res.status(500).json({ error: 'Failed to fetch answers' });
   });
 });
+// API ENDPOINT TO SAVE ANSWER
+app.post('/submit-answer',(req, res) => {
+  const answer = req.body.answer ; // assuming answer sent in the request body
+  // save the answer to answers.txt
+  fs.appendFileSync('answers.txt', answer , +'\n');
+  // git command to add , commmit & push
+exec ('git add answers.txt && git commit -m "add new answer" && git push origin main',(error, stdout, stderr)=>{
+
+  if (error)
+  {
+    console.error('Error: ${error.message}') ;
+    return res.status(500).send('error saving answer');
+
+  }
+  if (stderr)
+  {
+    console.error('Stderr: ${stderr}');
+    return res.status(500).send('Error saving answer');
+  }
+
+  console.log('Stdout: ${stdout}');
+  res.send('Answer Saved and Pushed to GitHub');
+
+});
+
+});
+
+//start the server
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
 });
