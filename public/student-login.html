@@ -249,26 +249,30 @@
     });
 
     // Load questions after student login
-    async function loadQuestions() {
+    document.getElementById('submit-answers').addEventListener('click', async () => {
+      const textareas = document.querySelectorAll('textarea');
+      const student = document.getElementById('studentName').value.trim(); // assume this exists
+    
+      const answers = Array.from(textareas).map((textarea, index) => ({
+        student,
+        question: document.querySelector(`label[for="${textarea.id}"]`).textContent,
+        answer: textarea.value.trim()
+      }));
+    
       try {
-        const response = await fetch('https://student-teacher-project.onrender.com/questions'); //questions
+        const response = await fetch('https://student-teacher-project.onrender.com/submit-answers', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ answers })
+        });
+    
         const result = await response.json();
-
-        if (result.success) {
-          const questions = result.questions;
-          questionsContainer.innerHTML = questions.map((question, index) => `
-            <div class="question">
-              <label for="question${index}">${question}</label><br>
-              <textarea id="question${index}" placeholder="Type your answer here..."></textarea>
-            </div>
-          `).join('');
-        } else {
-          questionsContainer.innerHTML = 'No questions available.';
-        }
-      } catch (error) {
-        questionsContainer.innerHTML = 'Failed to load questions.';
+        alert(result.message || 'Submitted!');
+      } catch (err) {
+        console.error('Error submitting answers:', err);
+        alert('Error submitting answers');
       }
-    }
+    });
 
     // Submit answers
     submitAnswersBtn.addEventListener('click', async () => {
