@@ -188,124 +188,140 @@
     <button id="submit-answers" class="view_button">Submit Answers</button>
   </div>
 
-  <script>
-    const signupForm = document.getElementById('signup-form');
-    const loginForm = document.getElementById('login-form');
-    const signupFormContainer = document.getElementById('signup-form-container');
-    const loginFormContainer = document.getElementById('login-form-container');
-    const studentDashboard = document.getElementById('student-dashboard');
-    const questionsContainer = document.getElementById('questions-container');
-    const submitAnswersBtn = document.getElementById('submit-answers');
+<script>
+  const signupForm = document.getElementById('signup-form');
+  const loginForm = document.getElementById('login-form');
+  const signupFormContainer = document.getElementById('signup-form-container');
+  const loginFormContainer = document.getElementById('login-form-container');
+  const studentDashboard = document.getElementById('student-dashboard');
+  const questionsContainer = document.getElementById('questions-container');
+  const submitAnswersBtn = document.getElementById('submit-answers');
+  const hiddenStudentName = document.getElementById('studentName'); // hidden input field
 
-    // Signup Logic
-    signupForm.addEventListener('submit', async (e) => {
-      e.preventDefault();
-      const studentId = document.getElementById('signup-id').value;
-      const password = document.getElementById('signup-password').value;
+  // Signup Logic
+  signupForm.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const studentId = document.getElementById('signup-id').value;
+    const password = document.getElementById('signup-password').value;
 
-      try {
-        const response = await fetch('https://student-teacher-project.onrender.com/signup', {
-          method: 'POST',
-          body: JSON.stringify({ name: studentId, password }),
-          headers: { 'Content-Type': 'application/json' }
-        });
-        const result = await response.json();
-        if (result.success) {
-          alert('Account created successfully! Please login.');
-          signupFormContainer.style.display = 'none';  // Hide Signup
-          loginFormContainer.style.display = 'block';  // Show Login
-        } else {
-          alert('Account creation failed. Please try again.');
-        }
-      } catch (error) {
-        alert('Error occurred while creating account. Please try again.');
+    try {
+      const response = await fetch('https://student-teacher-project.onrender.com/signup', {
+        method: 'POST',
+        body: JSON.stringify({ name: studentId, password }),
+        headers: { 'Content-Type': 'application/json' }
+      });
+      const result = await response.json();
+      if (result.success) {
+        alert('Account created successfully! Please login.');
+        signupFormContainer.style.display = 'none';
+        loginFormContainer.style.display = 'block';
+      } else {
+        alert('Account creation failed. Please try again.');
       }
-    });
+    } catch (error) {
+      alert('Error occurred while creating account. Please try again.');
+    }
+  });
 
-    // Login Logic
-    loginForm.addEventListener('submit', async (e) => {
-      e.preventDefault();
-      const studentId = document.getElementById('login-id').value;
-      const password = document.getElementById('login-password').value;
+  // Login Logic
+  loginForm.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const studentId = document.getElementById('login-id').value;
+    const password = document.getElementById('login-password').value;
 
-      try {
-        const response = await fetch('https://student-teacher-project.onrender.com/student-login', {
-          method: 'POST',
-          body: JSON.stringify({ id: studentId, password }),
-          headers: { 'Content-Type': 'application/json' }
-        });
-
-        const result = await response.json();
-        if (result.success) {
-          studentDashboard.style.display = 'block';  // Show dashboard
-          loginFormContainer.style.display = 'none';  // Hide Login
-          loadQuestions();  // Load questions after login
-        } else {
-          alert('Invalid credentials!');
-        }
-      } catch (error) {
-        alert('Login failed. Please try again.');
-      }
-    });
-
-    // Load questions after student login
-    document.getElementById('submit-answers').addEventListener('click', async () => {
-      const textareas = document.querySelectorAll('textarea');
-      const student = document.getElementById('studentName').value.trim(); // assume this exists
-    
-      const answers = Array.from(textareas).map((textarea, index) => ({
-        student,
-        question: document.querySelector(`label[for="${textarea.id}"]`).textContent,
-        answer: textarea.value.trim()
-      }));
-    
-      try {
-        const response = await fetch('https://student-teacher-project.onrender.com/submit-answers', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ answers })
-        });
-    
-        const result = await response.json();
-        alert(result.message || 'Submitted!');
-      } catch (err) {
-        console.error('Error submitting answers:', err);
-        alert('Error submitting answers');
-      }
-    });
-
-    // Submit answers
-    submitAnswersBtn.addEventListener('click', async () => {
-      const answers = [];
-      const textareas = document.querySelectorAll('textarea');
-
-      textareas.forEach((textarea, index) => {
-        answers.push({ questionId: index, answer: textarea.value.trim() });
+    try {
+      const response = await fetch('https://student-teacher-project.onrender.com/student-login', {
+        method: 'POST',
+        body: JSON.stringify({ id: studentId, password }),
+        headers: { 'Content-Type': 'application/json' }
       });
 
-      if (answers.length === 0) {
-        alert("Please provide answers to all questions.");
-        return;
+      const result = await response.json();
+      if (result.success) {
+        hiddenStudentName.value = studentId; // store student ID in hidden field
+        studentDashboard.style.display = 'block';
+        loginFormContainer.style.display = 'none';
+        loadQuestions(); // load questions after login
+      } else {
+        alert('Invalid credentials!');
       }
+    } catch (error) {
+      alert('Login failed. Please try again.');
+    }
+  });
 
-      try {
-        const response = await fetch('https://student-teacher-project.onrender.com/submit-answers', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ answers })
+  // Load Questions Dynamically
+  async function loadQuestions() {
+    try {
+      const response = await fetch('https://student-teacher-project.onrender.com/questions');
+      const data = await response.json();
+
+      if (data.success && Array.isArray(data.questions)) {
+        questionsContainer.innerHTML = ''; // Clear old content if any
+
+        data.questions.forEach((question, index) => {
+          const qId = `q${index}`;
+
+          const label = document.createElement('label');
+          label.setAttribute('for', qId);
+          label.textContent = question;
+
+          const textarea = document.createElement('textarea');
+          textarea.id = qId;
+          textarea.rows = 3;
+          textarea.cols = 50;
+
+          questionsContainer.appendChild(label);
+          questionsContainer.appendChild(document.createElement('br'));
+          questionsContainer.appendChild(textarea);
+          questionsContainer.appendChild(document.createElement('br'));
+          questionsContainer.appendChild(document.createElement('br'));
         });
-
-        const result = await response.json();
-        if (result.success) {
-          alert("✅ Answers submitted successfully!");
-        } else {
-          alert("❌ Failed to submit answers.");
-        }
-      } catch (error) {
-        alert("Server error. Try again.");
+      } else {
+        alert("No questions found.");
       }
-    });
-  </script>
+    } catch (err) {
+      alert('Failed to load questions.');
+      console.error(err);
+    }
+  }
+
+  // Submit Answers
+  submitAnswersBtn.addEventListener('click', async () => {
+    const student = hiddenStudentName.value.trim();
+    const textareas = document.querySelectorAll('textarea');
+
+    const answers = Array.from(textareas).map(textarea => ({
+      student,
+      question: document.querySelector(`label[for="${textarea.id}"]`).textContent,
+      answer: textarea.value.trim()
+    }));
+
+    if (!student || answers.length === 0) {
+      alert("Please make sure you're logged in and have answered the questions.");
+      return;
+    }
+
+    try {
+      const response = await fetch('https://student-teacher-project.onrender.com/submit-answers', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ answers })
+      });
+
+      const result = await response.json();
+      if (result.success) {
+        alert("Answers submitted successfully!");
+      } else {
+        alert("Failed to submit answers.");
+      }
+    } catch (error) {
+      alert("Server error. Try again.");
+      console.error(error);
+    }
+  });
+</script>
+
 </body>
 
 </html>

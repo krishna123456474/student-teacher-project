@@ -103,12 +103,14 @@ app.get('/questions', (req, res) => {
   try {
     const questions = fs.readFileSync(path.join(__dirname, 'questions.txt'), 'utf8')
       .split('\n')
-      .filter(q => q);
-      res.send({ success: true, questions }); // <-- Yeh sirf array bhej raha hai
+      .filter(q => q.trim() !== '');
+    res.send({ success: true, questions });
   } catch (err) {
     res.status(500).send({ error: 'Error reading questions' });
   }
 });
+
+
 
 // ======= DELETE ALL QUESTIONS =========
 app.post('/delete-questions', (req, res) => {
